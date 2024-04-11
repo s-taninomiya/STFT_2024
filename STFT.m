@@ -31,7 +31,7 @@ timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
 A = zeros(windowLength, timeFrames);
 complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
 for i = 1 : timeFrames
-    shortTimeSignal = complementedInputSignal((i * shiftLength) : (i * shiftLength + windowLength - 1));
+    shortTimeSignal = complementedInputSignal(((i - 1) * shiftLength + 1) : ((i - 1) * shiftLength + windowLength));
     multipliedShortTimeSignal = shortTimeSignal .* hannWindow;
     A(:, i) = multipliedShortTimeSignal;
 end
