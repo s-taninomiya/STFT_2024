@@ -28,12 +28,11 @@ windowLength = 2 ^ 11;
 shiftLength = 2 ^ 10;
 
 %入力信号の取得
-[inputSignal, fs] = audioread("guitar.wav");
+[inputSignal, fs] = audioread("");
 ts = 1 / fs;
-signalLength = length(inputSignal);
-signalTime = ts * signalLength;
-inputSignalAxis = (linspace(0, signalTime, signalLength));
-displayGraph(inputSignalAxis, inputSignal, 0, signalTime);
+signalLength = 
+signalTime = ts * length(inputSignal);
+inputSignalAxis = (linspace(0, signalLength, length(inputSignal)));
 
 %{
 正弦波(入力信号)の生成
