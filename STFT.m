@@ -17,7 +17,7 @@ function [] = displayColorMap(matrix, timeMax, freqMax)
     ylim([0, freqMax / 2]);
     xlabel("Time[s]");
     ylabel("Frequency[Hz]");
-
+    set(gca, "FontSize", 18, "FontName", "Times");
 end
 
 %定義
