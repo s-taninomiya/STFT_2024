@@ -38,3 +38,9 @@ end
 
 %行列の表示
 disp(A);
+
+%複素スペクトログラムの算出
+S = zeros(windowLength, timeFrames);
+for j = 1 : timeFrames
+    S(:, j) = fft(A(:, j));
+end
