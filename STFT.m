@@ -26,21 +26,15 @@ hannWindowAxis = (linspace(0, windowLength - 1, windowLength)).';
 hannWindow = 0.5 - 0.5 * cos((2 * pi * hannWindowAxis) / (windowLength - 1));
 display(hannWindowAxis, hannWindow, 0, windowLength - 1);
 
-%入力信号の零埋め,入力信号の分割,窓関数の乗算,行列化
+%入力信号の零埋め,入力信号の分割,窓関数の乗算,行列化,複素スペクトログラム化
 timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
-A = zeros(windowLength, timeFrames);
+S = zeros(windowLength, timeFrames);
 complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
 for i = 1 : timeFrames
     shortTimeSignal = complementedInputSignal(((i - 1) * shiftLength + 1) : ((i - 1) * shiftLength + windowLength));
     multipliedShortTimeSignal = shortTimeSignal .* hannWindow;
-    A(:, i) = multipliedShortTimeSignal;
+    S(:, i) = fft(multipliedShortTimeSignal);
 end
 
 %行列の表示
-disp(A);
-
-%複素スペクトログラムの算出
-S = zeros(windowLength, timeFrames);
-for j = 1 : timeFrames
-    S(:, j) = fft(A(:, j));
-end
+disp(S);
