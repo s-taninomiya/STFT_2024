@@ -3,9 +3,9 @@ clear; close all; clc;
 % definition window length and shift length
 windowLength = 2 ^ 11;
 shiftLength = 2 ^ 10;
-windowType = "h";
+windowType = "han";
 specVisible = true;
-paddingMethod = "both";
+paddingMethod = "end";
 
 % loading audio files
 [inputSignal, fs] = audioread("guitar.wav");

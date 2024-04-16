@@ -41,10 +41,11 @@ signalTime = ts * signalLength;
 windowFunc = generateWindowFunction(windowLength, windowType);
 
 % zero-padding of input signal
-complementedInputSignal = zeroPadding(inputSignal, windowLength, paddingMethod);
+%[complementedInputSignal, timeFrames] = zeroPadding(inputSignal, signalLength, windowLength, shiftLength, paddingMethod);
+complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
+timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
 
 % splitting the input signal, window function multiplication, calculate complex-value spectrogram
-timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
 S = zeros(windowLength, timeFrames);
 for i = 1 : timeFrames
     shortTimeSignal = complementedInputSignal(((i - 1) * shiftLength + 1) : ((i - 1) * shiftLength + windowLength));
@@ -62,25 +63,29 @@ end
 %% Local function
 %--------------------------------------------------------------------------
 function [windowFunc] = generateWindowFunction(windowLength, windowType)
-WindowFuncAxis = (linspace(0, windowLength - 1, windowLength)).';
+windowFuncAxis = (linspace(0, windowLength - 1, windowLength)).';
 switch windowType
     case "rect"
-        windowFunc = ones(windowLength, 1);
+        windowFunc = (ones(windowLength, 1)).';
     case "han"
-        windowFunc = 0.5 - 0.5 * cos((2 * pi * WindowFuncAxis) / (windowLength - 1));
+        windowFunc = 0.5 - 0.5 * cos((2 * pi * windowFuncAxis) / (windowLength - 1));
     case "hamming"
-        windowFunc = 0.54 - 0.46 * cos((2 * pi * WindowFuncAxis) / (windowLength - 1));
+        windowFunc = 0.54 - 0.46 * cos((2 * pi * windowFuncAxis) / (windowLength - 1));
     case "blackman"
-        windowFunc = 0.42 - 0.5 * cos((2 * pi * WindowFuncAxis) / (windowLength - 1)) + 0.08 * cos((4 * pi * WindowFuncAxis) / (windowLength - 1));
+        windowFunc = 0.42 - 0.5 * cos((2 * pi * windowFuncAxis) / (windowLength - 1)) + 0.08 * cos((4 * pi * WindowFuncAxis) / (windowLength - 1));
 end
 end
 %--------------------------------------------------------------------------
-function [complementedInputSignal] = zeroPadding(inputSignal, windowLength, paddingMethod)
+function [complementedInputSignal, timeFrames] = zeroPadding(inputSignal, signalLength, windowLength, shiftLength, paddingMethod)
 switch paddingMethod
     case "end"
         complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
+        timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
     case "both"
-        complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
+        complementedInputSignal = padarray(inputSignal, windowLength / 2, 0, "pre", windowLength - 1, 0, "post");
+        %complementedInputSignal = padarray(complementedInputSignal, windowLength / 2, 0, "pre");
+        timeFrames = ceil((signalLength * 2 - windowLength) / (shiftLength * 2)) + 1;
+end
 end
 %--------------------------------------------------------------------------
 function [] = displayColorMap(matrix, timeMax, freqMax)
