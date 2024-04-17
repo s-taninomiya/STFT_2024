@@ -9,7 +9,7 @@ function [S] = calcSTFT(inputSignal, args)
 %      shiftLength : shift length used in STFT (scalar, default : 1024)
 %       windowType : select window function type (string, default : "han")
 %      specVisible : select whether to display the spectrogram (logical : default true)
-%    paddingMethod : select zero-padding method (string : default "both")
+%    paddingMethod : select zero-padding method (string : default "end")
 %
 % [Output]
 %                S : complex-value spectrogram (windowLength x timeFrames)
@@ -23,7 +23,7 @@ arguments
     args.shiftLength (1, 1) double {mustBeInteger, mustBeNonnegative} = 1024
     args.windowType (1, 1) string = "han"
     args.specVisible (1, 1) logical = true;
-    args.paddingMethod (1, 1) string = "both"
+    args.paddingMethod (1, 1) string = "end"
 end
 fs = args.fs;
 windowLength = args.windowLength;
@@ -41,9 +41,7 @@ signalTime = ts * signalLength;
 windowFunc = generateWindowFunction(windowLength, windowType);
 
 % zero-padding of input signal
-%[complementedInputSignal, timeFrames] = zeroPadding(inputSignal, signalLength, windowLength, shiftLength, paddingMethod);
-complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
-timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
+[complementedInputSignal, timeFrames] = zeroPadding(inputSignal, signalLength, windowLength, shiftLength, paddingMethod);
 
 % splitting the input signal, window function multiplication, calculate complex-value spectrogram
 S = zeros(windowLength, timeFrames);
@@ -66,13 +64,13 @@ function [windowFunc] = generateWindowFunction(windowLength, windowType)
 windowFuncAxis = (linspace(0, windowLength - 1, windowLength)).';
 switch windowType
     case "rect"
-        windowFunc = (ones(windowLength, 1)).';
+        windowFunc = ones(windowLength, 1);
     case "han"
         windowFunc = 0.5 - 0.5 * cos((2 * pi * windowFuncAxis) / (windowLength - 1));
     case "hamming"
         windowFunc = 0.54 - 0.46 * cos((2 * pi * windowFuncAxis) / (windowLength - 1));
     case "blackman"
-        windowFunc = 0.42 - 0.5 * cos((2 * pi * windowFuncAxis) / (windowLength - 1)) + 0.08 * cos((4 * pi * WindowFuncAxis) / (windowLength - 1));
+        windowFunc = 0.42 - 0.5 * cos((2 * pi * windowFuncAxis) / (windowLength - 1)) + 0.08 * cos((4 * pi * windowFuncAxis) / (windowLength - 1));
 end
 end
 %--------------------------------------------------------------------------
@@ -82,8 +80,8 @@ switch paddingMethod
         complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
         timeFrames = ceil((signalLength - windowLength) / shiftLength) + 1;
     case "both"
-        complementedInputSignal = padarray(inputSignal, windowLength / 2, 0, "pre", windowLength - 1, 0, "post");
-        %complementedInputSignal = padarray(complementedInputSignal, windowLength / 2, 0, "pre");
+        complementedInputSignal = padarray(inputSignal, windowLength - 1, 0, "post");
+        complementedInputSignal = padarray(complementedInputSignal, windowLength / 2, 0, "pre");
         timeFrames = ceil((signalLength * 2 - windowLength) / (shiftLength * 2)) + 1;
 end
 end

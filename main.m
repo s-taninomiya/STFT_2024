@@ -1,6 +1,6 @@
 clear; close all; clc;
 
-% definition window length and shift length
+% define necessary information for STFT
 windowLength = 2 ^ 11;
 shiftLength = 2 ^ 10;
 windowType = "han";
@@ -10,7 +10,7 @@ paddingMethod = "end";
 % loading audio files
 [inputSignal, fs] = audioread("guitar.wav");
 
-% executing calcSTFT
+% execute calcSTFT
 S = calcSTFT(inputSignal, ...
              "fs", fs, ...
              "windowLength", windowLength, ...
