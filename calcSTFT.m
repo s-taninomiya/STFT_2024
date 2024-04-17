@@ -21,9 +21,9 @@ arguments
     args.fs (1, 1) double {mustBeNonnegative} = 44100
     args.windowLength (1, 1) double {mustBeInteger, mustBeNonnegative} = 2048
     args.shiftLength (1, 1) double {mustBeInteger, mustBeNonnegative} = 1024
-    args.windowType (1, 1) string = "han"
+    args.windowType (1, 1) string {mustBeMember(args.windowType, ["rect", "han", "hamming", "blackman"])} = "han"
     args.specVisible (1, 1) logical = true;
-    args.paddingMethod (1, 1) string = "end"
+    args.paddingMethod (1, 1) string {mustBeMember(args.paddingMethod, ["end", "both"])} = "end"
 end
 fs = args.fs;
 windowLength = args.windowLength;
